@@ -1,5 +1,6 @@
 ###############################################################################
 ###                  Performance monitor for Shinyapps.io                   ###
+###                                 Server                                  ###
 ###                              Version: 1.0                               ###
 ###                            Date: 09-04-2018                             ###
 ###                       Author: Nicolai Simonsen                          ###
