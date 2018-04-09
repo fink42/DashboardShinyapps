@@ -43,10 +43,11 @@ shinyServer(function(input, output, session) {
     
     # Update data
     library(rsconnect)
-    setwd(paste0("C:/Users/",Sys.info()[7],"/OneDrive - Syddansk Universitet/PhD/Projects/Forskningens døgn/Shiny-survey/experiment1"))
-    setAccountInfo(name='fink',
-                   token='E0BC72125853579EECAEF33A81B3A4F3',
-                   secret='b4FUs93SDDuX7QUPcWh8oBOVyG8vmBcy6mlwix1l')
+    source("authentication.R")
+    
+    setAccountInfo(name = name,
+                   token = token,
+                   secret = secret)
     
     
     cpu.user <- showMetrics("container.cpu",c("cpu.user"), server="shinyapps.io") %>% data.table()
@@ -66,7 +67,6 @@ shinyServer(function(input, output, session) {
     
     
     # Load old monitoring data    
-    setwd(paste0("C:/Users/",Sys.info()[7],"/OneDrive - Syddansk Universitet/PhD/Projects/Forskningens døgn/Shiny-survey/MonitoringDashboardShinyapps.io"))
     load("monitoringData.Rdata")
     
     # Check which observations are new
