@@ -18,11 +18,15 @@ shinyServer(function(input, output, session) {
   
   timer <- reactiveValues(start = 0)
   
+  # Set data path
+  dataPath <- paste0("C:/Users/",Sys.info()[7],"/OneDrive - Syddansk Universitet/PhD/Projects/Forskningens dogn/Shiny-survey/DashboardShinyapps/monitoringData.Rdata")
+  
   # Render plot
   output$dashboardPlot <- renderPlot({
+
     print("Rendering plot")
     # Load data
-    load("monitoringData.Rdata")
+    load(dataPath)
     monitoring.data <- melt(monitoring.data, id.vars = "timestamp")
     
     ggplot(data = monitoring.data[timestamp>Sys.time()-60*60*as.numeric(input$period),]) +
@@ -45,6 +49,7 @@ shinyServer(function(input, output, session) {
     # Update data
     library(rsconnect)
     source("authentication.R")
+    setwd(paste0("C:/Users/",Sys.info()[7],"/OneDrive - Syddansk Universitet/PhD/Projects/Forskningens dogn/Shiny-survey/experiment1"))
     
     setAccountInfo(name = name,
                    token = token,
@@ -63,12 +68,13 @@ shinyServer(function(input, output, session) {
     workers <- showMetrics("container.shiny.status",c("shiny.rprocs.count"), server="shinyapps.io") %>% data.table()
     workers <- workers[,timestamp := as.POSIXct(timestamp, tz = "CET", origin = "1970-01-01")]
     
+    setwd(paste0("C:/Users/",Sys.info()[7],"/OneDrive - Syddansk Universitet/PhD/Projects/Forskningens dogn/Shiny-survey/DashboardShinyapps"))
     library(plyr); library(dplyr)
     new.data <- join_all(list(cpu.user,cpu.system,connections,workers), by = "timestamp", type = "right")
     
     
-    # Load old monitoring data    
-    load("monitoringData.Rdata")
+    # Load old monitoring data
+    load(dataPath)
     
     # Check which observations are new
     have <- monitoring.data[,timestamp]
@@ -81,7 +87,7 @@ shinyServer(function(input, output, session) {
                                          cpu.system != "NA" &
                                          shiny.connections.active != "NA" &
                                          shiny.rprocs.count != "NA",]
-    save(monitoring.data, file = "monitoringData.Rdata")
+    save(monitoring.data, file = dataPath)
     
     # Render Plot
     output$dashboardPlot <- renderPlot({
